@@ -1,5 +1,6 @@
 package com.coreJava.commerce;
 
+import com.coreJava.commerce.catalog.CatalogService;
 import com.coreJava.commerce.catalog.Category;
 import com.coreJava.commerce.catalog.Product;
 import com.coreJava.commerce.common.InsufficientStockException;
@@ -21,11 +22,19 @@ public class Main {
         Product book1 = new Product(2L, "mein kopft", book, 120, new BigDecimal("5.00"));
         Product testPr1 = new Product(4L, "test", book, 50, new BigDecimal("50"));
 
-        List<Product> productList = new ArrayList<>();
-        productList.add(keyboard1);
-        productList.add(laptop1);
-        productList.add(book1);
-        productList.add(testPr1);
+
+        CatalogService catalogService = new CatalogService();
+
+        catalogService.addProduct(keyboard1);
+        catalogService.addProduct(laptop1);
+        catalogService.addProduct(laptop1);
+        catalogService.addProduct(testPr1);
+
+//        List<Product> productList = new ArrayList<>();
+//        productList.add(keyboard1);
+//        productList.add(laptop1);
+//        productList.add(book1);
+//        productList.add(testPr1);
 
 
         book1.increaseStock(5);
@@ -41,7 +50,7 @@ public class Main {
             System.out.println("yetersiz stock hata msg : " + ex.getMessage());
         }
 
-        for (Product product : productList) {
+        for (Product product : catalogService.getProducts()) {
             System.out.printf(
                     "id : %d \n" +
                             "name : %s \n" +
@@ -53,7 +62,45 @@ public class Main {
 
         }
 
+        Product find = catalogService.findById(2L);
 
+        for (Product filtered : catalogService.findProductsByCategoryId(2L)){
+            System.out.printf(
+                    "id : %d \n" +
+                            "name : %s \n" +
+                            "category : %s\n" +
+                            "stock : %d \n" +
+                            "price : %f \n\n"
+
+                    , filtered.getId(), filtered.getName(), filtered.getCategory().getName(), filtered.getStockQuantity(), filtered.getPrice());
+
+        }
+
+        for (Product filtered : catalogService.findProductsByMinPrice(new BigDecimal("20.0"))){
+            System.out.printf(
+                    "id : %d \n" +
+                            "name : %s \n" +
+                            "category : %s\n" +
+                            "stock : %d \n" +
+                            "price : %f \n\n"
+
+                    , filtered.getId(), filtered.getName(), filtered.getCategory().getName(), filtered.getStockQuantity(), filtered.getPrice());
+
+        }
+
+        catalogService.removeProductById(4L);
+        for (Product product : catalogService.getProducts()) {
+            System.out.printf(
+                    "id : %d \n" +
+                            "name : %s \n" +
+                            "category : %s\n" +
+                            "stock : %d \n" +
+                            "price : %f \n\n"
+
+                    , product.getId(), product.getName(), product.getCategory().getName(), product.getStockQuantity(), product.getPrice());
+
+        }
+        catalogService.addProduct(new Product(1L,"deneme",book,50,new BigDecimal("20.00")));
 
     }
 }
