@@ -27,14 +27,8 @@ public class Main {
 
         catalogService.addProduct(keyboard1);
         catalogService.addProduct(laptop1);
-        catalogService.addProduct(laptop1);
+        catalogService.addProduct(book1);
         catalogService.addProduct(testPr1);
-
-//        List<Product> productList = new ArrayList<>();
-//        productList.add(keyboard1);
-//        productList.add(laptop1);
-//        productList.add(book1);
-//        productList.add(testPr1);
 
 
         book1.increaseStock(5);
@@ -47,7 +41,7 @@ public class Main {
         try {
             testPr1.decreaseStock(60);
         } catch (InsufficientStockException ex) {
-            System.out.println("yetersiz stock hata msg : " + ex.getMessage());
+            System.out.println("yetersiz stock hata msg : " + ex.getMessage() + "\n");
         }
 
         for (Product product : catalogService.getProducts()) {
@@ -62,9 +56,16 @@ public class Main {
 
         }
 
-        Product find = catalogService.findById(2L);
+        Product foundProduct = catalogService.findById(2L);
 
-        for (Product filtered : catalogService.findProductsByCategoryId(2L)){
+
+        if (foundProduct != null) {
+            System.out.println("Bulunan ürün: " + foundProduct.getName());
+        } else {
+            System.out.println("Ürün bulunamadı.");
+        }
+
+        for (Product filtered : catalogService.findProductsByCategoryId(2L)) {
             System.out.printf(
                     "id : %d \n" +
                             "name : %s \n" +
@@ -76,7 +77,7 @@ public class Main {
 
         }
 
-        for (Product filtered : catalogService.findProductsByMinPrice(new BigDecimal("20.0"))){
+        for (Product filtered : catalogService.findProductsByMinPrice(new BigDecimal("20.0"))) {
             System.out.printf(
                     "id : %d \n" +
                             "name : %s \n" +
@@ -100,7 +101,7 @@ public class Main {
                     , product.getId(), product.getName(), product.getCategory().getName(), product.getStockQuantity(), product.getPrice());
 
         }
-        catalogService.addProduct(new Product(1L,"deneme",book,50,new BigDecimal("20.00")));
+        catalogService.addProduct(new Product(1L, "deneme", book, 50, new BigDecimal("20.00")));
 
     }
 }

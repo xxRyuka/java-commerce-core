@@ -4,7 +4,17 @@ import com.coreJava.commerce.common.InsufficientStockException;
 
 import java.math.BigDecimal;
 
+
+
+// Long : default degeri null
+// long : default 0
+
+
+
 public class Product {
+
+
+
     private Long  id;
     private String name;
 
@@ -71,7 +81,7 @@ public class Product {
         return id;
     }
 
-    public boolean hasEnoughStock(int stockQuantity){
-        return this.stockQuantity>=stockQuantity;
+    public boolean hasEnoughStock(int quantity){
+        return this.stockQuantity>=quantity;
     }
 }

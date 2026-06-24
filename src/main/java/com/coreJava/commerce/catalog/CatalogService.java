@@ -2,17 +2,24 @@ package com.coreJava.commerce.catalog;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class CatalogService {
 
     // TODO: Javada List direk interfaceyi kapsıyor sanırım ArrayList'mi yapmalıydım ? bunu arastırıp not almam lazım !
-    private List<Product> products; // burda productları tutacagım in memory liste
+    // final ekleyerek listeyi const yaptım listeyi manipule edebilirim fakat sonran baska bir liste ile değiştiremem CONSTANT !
+    private final List<Product> products; // burda productları tutacagım in memory liste
     // Map<Key,Value>
-    private Map<Long, Product> productMap; // id ile eslestircem burda direk
+    // final ekleyerek listeyi const yaptım listeyi manipule edebilirim fakat sonran baska bir liste ile değiştiremem CONSTANT !
+    private final Map<Long, Product> productMap; // id ile eslestircem burda direk
 
     public CatalogService() { // bunu nullable yapmak istiyom c#'da ? koyuyordum ama burda nasıl olmalı
+        // listeyi ve mapi set etmem gerekiyor baslangıcta!
+
+        this.products = new ArrayList<Product>();
+        this.productMap = new HashMap<Long, Product>();
     }
 
 
@@ -26,13 +33,15 @@ public class CatalogService {
 //            }
 //        }
 
-        if (!existsById(product.getId())) {
-            System.out.printf("Urun zaten Mevcut urun id %d", product.getId());
+        if (existsById(product.getId())) {
+            System.out.printf("Urun zaten Mevcut urun id %d " + "\n", product.getId());
             return; // return ile fonksiyondan cıkıs dogru mu ? go'da böyle yapıyordum
         }
 
         products.add(product); // Listeye ekledik ek olarak mape set edelim
         productMap.put(product.getId(), product); // map içindede set edildi
+
+
     }
 
 
@@ -61,11 +70,14 @@ public class CatalogService {
         return filteredList;
     }
 
+
+    // price 50 ise
+    // gelen urunlerin pricesi daha kucuk ola
     public List<Product> findProductsByMinPrice(BigDecimal price) {
         List<Product> filteredList = new ArrayList<Product>();
 
         for (Product pr : products) {
-            if (price.compareTo(pr.getPrice())) {
+            if (price.compareTo(pr.getPrice()) < 0) {
                 filteredList.add(pr);
             }
         }
@@ -75,7 +87,7 @@ public class CatalogService {
     public boolean removeProductById(Long id) {
 
         if (findById(id) == null) {
-            System.out.println("girilen id'ye sahip ürün bulunamadı");
+            System.out.println("girilen id'ye sahip ürün bulunamadı" + "\n");
 
             return false;
         }
@@ -85,7 +97,7 @@ public class CatalogService {
         return true;
     }
 
-    public int getProductCount(){
+    public int getProductCount() {
         return products.size();
     }
 }
