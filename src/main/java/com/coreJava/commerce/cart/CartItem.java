@@ -1,14 +1,14 @@
-package com.coreJava.commerce.card;
+package com.coreJava.commerce.cart;
 
 import com.coreJava.commerce.catalog.Product;
 
 import java.math.BigDecimal;
 
-public class CardItem {
+public class CartItem {
     private Product item;
     private int quantity;
 
-    public CardItem(Product item, int quantity) {
+    public CartItem(Product item, int quantity) {
         this.item = item;
         this.quantity = quantity;
     }
