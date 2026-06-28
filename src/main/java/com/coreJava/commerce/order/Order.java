@@ -1,12 +1,15 @@
 package com.coreJava.commerce.order;
 
+import com.coreJava.commerce.catalog.Category;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Order {
     private Long id;
-    private OrderStatus status ;
+    private OrderStatus status;
     private List<OrderItem> orderLines = new ArrayList<>();
 
     public Order(Long id, List<OrderItem> items) {
@@ -14,6 +17,31 @@ public class Order {
         this.orderLines = new ArrayList<>(items);
         this.status = OrderStatus.CREATED;
     }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (!(obj instanceof Order order)) {
+            return false; // obj ile nesne'nin sinifi ayni değilse direk false
+        }
+
+        return Objects.equals(order.id, this.id);
+    }
+
+    @Override
+    public String toString() {
+        return this.status.toString() + " " + this.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.id);
+    }
+
 
     public List<OrderItem> getOrderLines() {
         return orderLines;

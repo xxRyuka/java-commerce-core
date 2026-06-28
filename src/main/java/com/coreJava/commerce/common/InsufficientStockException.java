@@ -1,16 +1,16 @@
 package com.coreJava.commerce.common;
 
-public class InsufficientStockException extends RuntimeException{
+public class InsufficientStockException extends RuntimeException {
 
-    public InsufficientStockException(){
+    public InsufficientStockException() {
         super("insufficient stock quantity");
     }
 
-    public InsufficientStockException(String customMsg){
+    public InsufficientStockException(String customMsg) {
         super(customMsg);
     }
 
-    public InsufficientStockException(String customMsg,Throwable cause){
-        super(customMsg,cause);
+    public InsufficientStockException(String customMsg, Throwable cause) {
+        super(customMsg, cause);
     }
 }

@@ -11,6 +11,8 @@ import com.coreJava.commerce.order.OrderItem;
 import com.coreJava.commerce.order.OrderService;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 
@@ -57,6 +59,34 @@ public class Main {
                 default -> System.out.println("Geçersiz seçim yaptınız.");
             }
         }
+
+
+        System.out.println("Test Area");
+
+        Category c1 = new Category(8L, "c1");
+        Category c2 = new Category(8L, "c1");
+
+
+        boolean b1 = c1.equals(c2);
+
+        System.out.println("c1==c2 " + b1);
+
+        HashMap<Long, Category> hm1 = new HashMap<Long, Category>();
+        hm1.put(8L, c1);
+        hm1.put(8L, c2);
+        System.out.println("hash map 1 size (2 category ekledim) " + hm1.size());
+
+        HashSet<Category> hs1 = new HashSet<>();
+
+        hs1.add(c1);
+        hs1.add(c2);
+        System.out.println("hash set 1 size (2 category ekledim) " + hs1.size());
+
+
+        System.out.println();
+
+
+        System.out.println("Test Area Closing");
 
         scanner.close();
     }
