@@ -10,6 +10,7 @@ import com.coreJava.commerce.common.InsufficientStockException;
 import com.coreJava.commerce.order.Order;
 import com.coreJava.commerce.order.OrderItem;
 import com.coreJava.commerce.order.OrderService;
+import com.coreJava.commerce.reporting.ReportService;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -135,13 +136,49 @@ public class Main {
             System.out.println(product + " | " + product.getName());
         }
 
-        Function
+//        Function
 
         // comparator pratices end !
 
         scanner.close();
+        ReportService reportService = new ReportService(catalogService.getProducts());
+        sprint7StreamDemo(catalogService,reportService);
     }
 
+
+    private static void sprint7StreamDemo(
+            CatalogService catalogService,
+            ReportService reportService
+    ) {
+        System.out.println("===== SPRINT 7 STREAM DEMO =====");
+
+        System.out.println("--- Stokta olan ürünler ---");
+        catalogService.findInStockProducts()
+                .forEach(System.out::println);
+
+        System.out.println("--- Pahalı ürünler ---");
+        catalogService.findProductsExpensiveThan(new BigDecimal("1000"))
+                .forEach(System.out::println);
+
+        System.out.println("--- Ürün isimleri ---");
+        catalogService.getProductNames()
+                .forEach(System.out::println);
+
+        System.out.println("--- Fiyata göre sıralı ürünler ---");
+        catalogService.getProductsSortedByPriceAsc()
+                .forEach(product ->
+                        System.out.println(product.getName() + " | " + product.getPrice())
+                );
+
+        System.out.println("--- Rapor ---");
+        System.out.println("Toplam stok adedi: " + reportService.getTotalStockQuantity());
+        System.out.println("Toplam envanter değeri: " + reportService.getTotalInventoryValue());
+        System.out.println("Ortalama ürün fiyatı: " + reportService.getAverageProductPrice());
+
+        System.out.println("Stokta olmayan ürün var mı? " + catalogService.hasAnyOutOfStockProduct());
+        System.out.println("Tüm ürünler stokta mı? " + catalogService.areAllProductsInStock());
+        System.out.println("Ücretsiz ürün yok mu? " + catalogService.hasNoFreeProduct());
+    }
     private static CatalogService createCatalog() {
         Category electronics = new Category(1L, "Elektronik");
         Category books = new Category(2L, "Kitap");

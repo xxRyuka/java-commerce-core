@@ -17,11 +17,13 @@ public class ReportService {
         return products.stream().mapToInt(Product::getStockQuantity).sum();
     }
 
-    public BigDecimal getTotalInventoryValue(){
-        return products.stream().map(product -> product.getPrice().multiply(BigDecimal.valueOf(product.getStockQuantity()))).reduce(BigDecimal.ZERO,BigDecimal::add);
+    public BigDecimal getTotalInventoryValue() {
+        return products.stream().map(product -> product.getPrice().multiply(BigDecimal.valueOf(product.getStockQuantity()))).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
 
-    //TODO: gelince burdan devam
-//    public double getAverageProductPrice() {}
+    public double getAverageProductPrice() {
+        return products.stream().mapToDouble(product -> product.getPrice().doubleValue()).average().orElse(0);
+    }
+
 }

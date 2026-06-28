@@ -161,4 +161,14 @@ public class CatalogService {
     public int getProductCount() {
         return products.size();
     }
+
+    public boolean areAllProductsInStock() {
+        return products.stream().allMatch(product -> product.getStockQuantity() > 0);
+
+    }
+
+    public boolean hasNoFreeProduct() {
+        return products.stream().allMatch(product -> product.getPrice().doubleValue() > 0);
+
+    }
 }
