@@ -1,10 +1,9 @@
 package com.coreJava.commerce.catalog;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class CatalogService {
 
@@ -50,7 +49,69 @@ public class CatalogService {
     }
 
 
-    // null kontrolunu falan nasıl yapcaz
+    public List<Product> findProducts(Predicate<Product> condition) {
+
+        List<Product> filteredList = new ArrayList<>();
+        for (Product item : products) {
+            if (condition.test(item)) {
+                filteredList.add(item);
+            }
+        }
+        return filteredList;
+    }
+
+
+    public void forEachProduct(Consumer<Product> productConsumer) {
+        for (Product item : products) {
+            productConsumer.accept(item);
+        }
+    }
+
+    public List<Product> getProductsSorted(Comparator<Product> productComparator) {
+        List<Product> sortedList = new ArrayList<>(products);
+        sortedList.sort(productComparator);
+        return sortedList;
+    }
+
+
+    public List<Product> findProductsWithStream(Predicate<Product> condition) {
+        return products.stream().filter(condition).toList();
+    }
+
+    public List<Product> findInStockProducts() {
+        return products.stream().filter(product -> product.getStockQuantity() > 0).toList();
+    }
+
+
+    public List<Product> findProductsExpensiveThan(BigDecimal minPrice) {
+        return products.stream().filter(product -> product.getPrice().compareTo(minPrice) >= 0).toList(); // neden altı cizildi ve mor oldu
+    }
+
+    public List<Product> getProductsSortedByPriceAsc() {
+        return products.stream().sorted(Comparator.comparing(Product::getPrice))
+                .toList();
+    }
+
+
+    public List<Product> getProductsSortedByNameAsc() {
+        return products.stream().sorted(Comparator.comparing(Product::getName)).toList();
+    }
+
+
+    public long countProducts() {
+        return products.stream()
+                .count();
+    }
+
+
+    public boolean hasAnyOutOfStockProduct() {
+        return products.stream().anyMatch(product -> product.getStockQuantity() <= 0);
+    }
+
+    public List<String> getProductNames() {
+        return products.stream().map(Product::getName).toList();
+    }
+
     public Product findById(Long id) {
         return productMap.get(id);
     }

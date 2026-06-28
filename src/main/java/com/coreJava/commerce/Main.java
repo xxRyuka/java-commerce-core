@@ -5,16 +5,17 @@ import com.coreJava.commerce.cart.CartItem;
 import com.coreJava.commerce.catalog.CatalogService;
 import com.coreJava.commerce.catalog.Category;
 import com.coreJava.commerce.catalog.Product;
+import com.coreJava.commerce.catalog.ProductRule;
 import com.coreJava.commerce.common.InsufficientStockException;
 import com.coreJava.commerce.order.Order;
 import com.coreJava.commerce.order.OrderItem;
 import com.coreJava.commerce.order.OrderService;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class Main {
 
@@ -87,6 +88,56 @@ public class Main {
 
 
         System.out.println("Test Area Closing");
+
+        // Pratices
+        Predicate<Product> isAvaliable = x -> x.getStockQuantity() > 5;
+        Product p1t = new Product(15L, "predicateTest", new Category(45L, "dd"), 50, BigDecimal.ONE);
+        System.out.println(isAvaliable.test(p1t));
+
+        Consumer<Product> print = product -> {
+            System.out.println(product.getName());
+        };
+
+        print.accept(p1t);
+
+        List<Product> filtered = catalogService.findProducts(isAvaliable);
+        catalogService.forEachProduct(System.out::println);  // bu sekilde parametreleri nasıl gonderiyoruz ? burası çok karıstı işte
+
+
+        System.out.println();
+        Function<Product, String> toStringProduct = Product::getName;
+        System.out.println(toStringProduct.apply(p1t));
+        // pratices ending
+
+
+        Comparator<Product> comparator = Comparator.comparing(Product::getPrice);
+        List<Product> sortedByPrice = catalogService.getProductsSorted(comparator);
+        for (Product product : sortedByPrice) {
+            System.out.println(product);
+        }
+
+        ProductRule productRule = product -> product.hasEnoughStock(100);
+        System.out.println(productRule.isSatisfiedBy(p1t));
+
+        // comparator pratices
+
+        Comparator<Product> byStockAsc = (p1, p2) -> Integer.compare(p1.getStockQuantity(),p2.getStockQuantity());
+        List<Product> sortedByStockQuantity = catalogService.getProductsSorted(byStockAsc).reversed();
+        for (Product product : sortedByStockQuantity) {
+            System.out.println(product + " | " + product.getStockQuantity());
+        }
+
+
+        Comparator<Product> byAlpabetic = Comparator.comparing(Product::getName);
+        List<Product> sortedByAlpabetic = catalogService.getProductsSorted(byAlpabetic).reversed();
+
+        for (Product product : sortedByAlpabetic) {
+            System.out.println(product + " | " + product.getName());
+        }
+
+        Function
+
+        // comparator pratices end !
 
         scanner.close();
     }
