@@ -68,7 +68,7 @@ public class Product {
     }
 
     public int getStockQuantity() {
-        return stockQuantity;
+        return this.stockQuantity;
     }
 
     public void increaseStock(int quantity) {

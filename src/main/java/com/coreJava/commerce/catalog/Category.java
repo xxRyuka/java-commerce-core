@@ -2,12 +2,16 @@ package com.coreJava.commerce.catalog;
 
 import java.util.Objects;
 
+/// Class = methods, field
+
+
+// LOMBOK newCategory.getId()
 public class Category {
     private Long id;
     private String name;
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void rename(String name) {
