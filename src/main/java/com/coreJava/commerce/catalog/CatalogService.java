@@ -120,6 +120,8 @@ public class CatalogService {
         return products;
     }
 
+
+    // category idsine gore ürünleri listeliyo
     public List<Product> findProductsByCategoryId(Long id) {
         List<Product> filteredList = new ArrayList<Product>();
 
@@ -131,7 +133,17 @@ public class CatalogService {
         return filteredList;
     }
 
+    // category adıan gore ürünleri listele
+    public List<Product> findProductsByCategoryName(String name) {
+        List<Product> filteredList = new ArrayList<Product>();
 
+        for (Product pr : products) {
+            if (pr.getCategory().getName().equals(name)) {
+                filteredList.add(pr);
+            }
+        }
+        return filteredList;
+    }
     // price 50 ise
     // gelen urunlerin pricesi daha kucuk ola
     public List<Product> findProductsByMinPrice(BigDecimal price) {

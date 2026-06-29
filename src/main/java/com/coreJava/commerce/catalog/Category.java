@@ -19,7 +19,11 @@ public class Category {
         this.name = name;
     }
 
+// toString , equals , hasCode
 
+
+
+    // Domain Rule
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -29,7 +33,7 @@ public class Category {
         if (!(obj instanceof Category category)) {
             return false; // obj ile nesne'nin sinifi ayni değilse direk false
         }
-
+// int digeri string product.sku , this.sku
         return Objects.equals(category.id, this.id);
     }
 

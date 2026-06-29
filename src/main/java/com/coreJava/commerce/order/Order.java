@@ -3,6 +3,8 @@ package com.coreJava.commerce.order;
 import com.coreJava.commerce.catalog.Category;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -11,10 +13,12 @@ public class Order {
     private Long id;
     private OrderStatus status;
     private List<OrderItem> orderLines = new ArrayList<>();
+    private LocalDateTime createdAt;
 
     public Order(Long id, List<OrderItem> items) {
         this.id = id;
         this.orderLines = new ArrayList<>(items);
+        this.createdAt = LocalDateTime.now();
         this.status = OrderStatus.CREATED;
     }
 
@@ -61,5 +65,16 @@ public class Order {
             totalAmount = totalAmount.add(item.getLineTotal());
         }
         return totalAmount;
+    }
+
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public String printOrderDate(){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm:ss");
+
+        return formatter.format(this.getCreatedAt());
     }
 }

@@ -5,7 +5,6 @@ import com.coreJava.commerce.cart.CartItem;
 import com.coreJava.commerce.catalog.CatalogService;
 import com.coreJava.commerce.catalog.Category;
 import com.coreJava.commerce.catalog.Product;
-import com.coreJava.commerce.catalog.ProductRule;
 import com.coreJava.commerce.common.InsufficientStockException;
 import com.coreJava.commerce.order.Order;
 import com.coreJava.commerce.order.OrderItem;
@@ -13,18 +12,23 @@ import com.coreJava.commerce.order.OrderService;
 import com.coreJava.commerce.reporting.ReportService;
 
 import java.math.BigDecimal;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Optional;
+import java.util.Scanner;
 
 public class Main {
+
+    private static final DateTimeFormatter ORDER_DATE_FORMATTER =
+            DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 
     public static void main(String[] args) {
 
         CatalogService catalogService = createCatalog();
         Cart cart = new Cart(1L);
         OrderService orderService = new OrderService();
+        ReportService reportService = new ReportService(catalogService.getProducts());
 
         Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
@@ -53,6 +57,10 @@ public class Main {
 
                 case 7 -> printOrders(orderService);
 
+                case 8 -> sprint8OptionalDateTimeDemo(orderService);
+
+                case 9 -> sprint7StreamDemo(catalogService, reportService);
+
                 case 0 -> {
                     isRunning = false;
                     System.out.println("Uygulama kapatıldı.");
@@ -62,123 +70,9 @@ public class Main {
             }
         }
 
-
-        System.out.println("Test Area");
-
-        Category c1 = new Category(8L, "c1");
-        Category c2 = new Category(8L, "c1");
-
-
-        boolean b1 = c1.equals(c2);
-
-        System.out.println("c1==c2 " + b1);
-
-        HashMap<Long, Category> hm1 = new HashMap<Long, Category>();
-        hm1.put(8L, c1);
-        hm1.put(8L, c2);
-        System.out.println("hash map 1 size (2 category ekledim) " + hm1.size());
-
-        HashSet<Category> hs1 = new HashSet<>();
-
-        hs1.add(c1);
-        hs1.add(c2);
-        System.out.println("hash set 1 size (2 category ekledim) " + hs1.size());
-
-
-        System.out.println();
-
-
-        System.out.println("Test Area Closing");
-
-        // Pratices
-        Predicate<Product> isAvaliable = x -> x.getStockQuantity() > 5;
-        Product p1t = new Product(15L, "predicateTest", new Category(45L, "dd"), 50, BigDecimal.ONE);
-        System.out.println(isAvaliable.test(p1t));
-
-        Consumer<Product> print = product -> {
-            System.out.println(product.getName());
-        };
-
-        print.accept(p1t);
-
-        List<Product> filtered = catalogService.findProducts(isAvaliable);
-        catalogService.forEachProduct(System.out::println);  // bu sekilde parametreleri nasıl gonderiyoruz ? burası çok karıstı işte
-
-
-        System.out.println();
-        Function<Product, String> toStringProduct = Product::getName;
-        System.out.println(toStringProduct.apply(p1t));
-        // pratices ending
-
-
-        Comparator<Product> comparator = Comparator.comparing(Product::getPrice);
-        List<Product> sortedByPrice = catalogService.getProductsSorted(comparator);
-        for (Product product : sortedByPrice) {
-            System.out.println(product);
-        }
-
-        ProductRule productRule = product -> product.hasEnoughStock(100);
-        System.out.println(productRule.isSatisfiedBy(p1t));
-
-        // comparator pratices
-
-        Comparator<Product> byStockAsc = (p1, p2) -> Integer.compare(p1.getStockQuantity(),p2.getStockQuantity());
-        List<Product> sortedByStockQuantity = catalogService.getProductsSorted(byStockAsc).reversed();
-        for (Product product : sortedByStockQuantity) {
-            System.out.println(product + " | " + product.getStockQuantity());
-        }
-
-
-        Comparator<Product> byAlpabetic = Comparator.comparing(Product::getName);
-        List<Product> sortedByAlpabetic = catalogService.getProductsSorted(byAlpabetic).reversed();
-
-        for (Product product : sortedByAlpabetic) {
-            System.out.println(product + " | " + product.getName());
-        }
-
-//        Function
-
-        // comparator pratices end !
-
         scanner.close();
-        ReportService reportService = new ReportService(catalogService.getProducts());
-        sprint7StreamDemo(catalogService,reportService);
     }
 
-
-    private static void sprint7StreamDemo(
-            CatalogService catalogService,
-            ReportService reportService
-    ) {
-        System.out.println("===== SPRINT 7 STREAM DEMO =====");
-
-        System.out.println("--- Stokta olan ürünler ---");
-        catalogService.findInStockProducts()
-                .forEach(System.out::println);
-
-        System.out.println("--- Pahalı ürünler ---");
-        catalogService.findProductsExpensiveThan(new BigDecimal("1000"))
-                .forEach(System.out::println);
-
-        System.out.println("--- Ürün isimleri ---");
-        catalogService.getProductNames()
-                .forEach(System.out::println);
-
-        System.out.println("--- Fiyata göre sıralı ürünler ---");
-        catalogService.getProductsSortedByPriceAsc()
-                .forEach(product ->
-                        System.out.println(product.getName() + " | " + product.getPrice())
-                );
-
-        System.out.println("--- Rapor ---");
-        System.out.println("Toplam stok adedi: " + reportService.getTotalStockQuantity());
-        System.out.println("Toplam envanter değeri: " + reportService.getTotalInventoryValue());
-        System.out.println("Ortalama ürün fiyatı: " + reportService.getAverageProductPrice());
-
-        System.out.println("Stokta olmayan ürün var mı? " + catalogService.hasAnyOutOfStockProduct());
-        System.out.println("Tüm ürünler stokta mı? " + catalogService.areAllProductsInStock());
-        System.out.println("Ücretsiz ürün yok mu? " + catalogService.hasNoFreeProduct());
-    }
     private static CatalogService createCatalog() {
         Category electronics = new Category(1L, "Elektronik");
         Category books = new Category(2L, "Kitap");
@@ -201,7 +95,7 @@ public class Main {
 
         Product book = new Product(
                 3L,
-                "Mein Kampf",
+                "Clean Code",
                 books,
                 120,
                 new BigDecimal("5.00")
@@ -235,6 +129,8 @@ public class Main {
         System.out.println("5 - Sepetten Ürün Sil");
         System.out.println("6 - Siparişi Tamamla");
         System.out.println("7 - Sipariş Geçmişi");
+        System.out.println("8 - Sprint 8 Optional Date-Time Demo");
+        System.out.println("9 - Sprint 7 Stream Report Demo");
         System.out.println("0 - Çıkış");
         System.out.println("------------------------------------");
     }
@@ -243,12 +139,14 @@ public class Main {
         System.out.println();
         System.out.println("========== KATALOG ==========");
 
-        if (catalogService.getProducts().isEmpty()) {
+        List<Product> products = catalogService.getProducts();
+
+        if (products.isEmpty()) {
             System.out.println("Katalogda ürün bulunmuyor.");
             return;
         }
 
-        for (Product product : catalogService.getProducts()) {
+        for (Product product : products) {
             System.out.printf(
                     "ID: %d | Ürün: %s | Kategori: %s | Fiyat: %s | Stok: %d%n",
                     product.getId(),
@@ -364,7 +262,7 @@ public class Main {
         List<Order> orders = orderService.getOrders();
 
         System.out.println();
-        System.out.println("======= SIPARIŞ GEÇMİŞİ =======");
+        System.out.println("======= SİPARİŞ GEÇMİŞİ =======");
 
         if (orders.isEmpty()) {
             System.out.println("Henüz oluşturulmuş sipariş yok.");
@@ -381,6 +279,7 @@ public class Main {
         System.out.println("========== ORDER ==========");
         System.out.println("Order ID: " + order.getId());
         System.out.println("Status: " + order.getStatus());
+        System.out.println("Order Date: " + order.getCreatedAt().format(ORDER_DATE_FORMATTER));
         System.out.println("---------------------------");
 
         for (OrderItem item : order.getOrderLines()) {
@@ -422,6 +321,102 @@ public class Main {
         System.out.println("------------------------------------");
         System.out.println("Toplam Ürün Adedi: " + cart.getTotalQuantity());
         System.out.println("Genel Toplam: " + cart.getTotalAmount());
+    }
+
+    private static void sprint8OptionalDateTimeDemo(OrderService orderService) {
+        System.out.println();
+        System.out.println("===== SPRINT 8 OPTIONAL & DATE-TIME DEMO =====");
+
+        Optional<Order> foundOrder = orderService.findOrderById(1L);
+
+        if (foundOrder.isPresent()) {
+            System.out.println("1 ID'li sipariş bulundu:");
+            printOrder(foundOrder.get());
+        } else {
+            System.out.println("1 ID'li sipariş bulunamadı.");
+        }
+
+        Optional<Order> notFoundOrder = orderService.findOrderById(999L);
+
+        if (notFoundOrder.isEmpty()) {
+            System.out.println("999 ID'li sipariş bulunamadı.");
+        }
+
+        orderService.findLastOrder()
+                .ifPresent(order -> {
+                    System.out.println();
+                    System.out.println("Son sipariş bulundu:");
+                    printOrder(order);
+                });
+
+        try {
+            Order requiredOrder = orderService.findOrderById(1L)
+                    .orElseThrow(() -> new IllegalArgumentException("Sipariş bulunamadı."));
+
+            System.out.println("orElseThrow ile alınan sipariş ID: " + requiredOrder.getId());
+
+        } catch (IllegalArgumentException ex) {
+            System.out.println("orElseThrow sonucu hata: " + ex.getMessage());
+        }
+
+        LocalDate today = LocalDate.now();
+
+        List<Order> todayOrders = orderService.findOrdersByDate(today);
+
+        System.out.println();
+        System.out.println("Bugünkü sipariş sayısı: " + todayOrders.size());
+
+        List<Order> lastSevenDaysOrders = orderService.findOrdersBetween(
+                today.minusDays(7),
+                today
+        );
+
+        System.out.println("Son 7 gündeki sipariş sayısı: " + lastSevenDaysOrders.size());
+        System.out.println("Toplam sipariş sayısı: " + orderService.countOrders());
+        System.out.println("Toplam satış tutarı: " + orderService.getTotalSalesAmount());
+        System.out.println("==============================================");
+    }
+
+    private static void sprint7StreamDemo(
+            CatalogService catalogService,
+            ReportService reportService
+    ) {
+        System.out.println();
+        System.out.println("===== SPRINT 7 STREAM DEMO =====");
+
+        System.out.println("--- Stokta olan ürünler ---");
+        catalogService.findInStockProducts()
+                .forEach(System.out::println);
+
+        System.out.println("--- Pahalı ürünler ---");
+        catalogService.findProductsExpensiveThan(new BigDecimal("1000"))
+                .forEach(System.out::println);
+
+        System.out.println("--- Ürün isimleri ---");
+        catalogService.getProductNames()
+                .forEach(System.out::println);
+
+        System.out.println("--- Fiyata göre sıralı ürünler ---");
+        catalogService.getProductsSortedByPriceAsc()
+                .forEach(product ->
+                        System.out.println(product.getName() + " | " + product.getPrice())
+                );
+
+        System.out.println("--- İsme göre sıralı ürünler ---");
+        catalogService.getProductsSortedByNameAsc()
+                .forEach(product ->
+                        System.out.println(product.getName())
+                );
+
+        System.out.println("--- Rapor ---");
+        System.out.println("Toplam stok adedi: " + reportService.getTotalStockQuantity());
+        System.out.println("Toplam envanter değeri: " + reportService.getTotalInventoryValue());
+        System.out.println("Ortalama ürün fiyatı: " + reportService.getAverageProductPrice());
+
+        System.out.println("Stokta olmayan ürün var mı? " + catalogService.hasAnyOutOfStockProduct());
+        System.out.println("Tüm ürünler stokta mı? " + catalogService.areAllProductsInStock());
+        System.out.println("Ücretsiz ürün yok mu? " + catalogService.hasNoFreeProduct());
+        System.out.println("================================");
     }
 
     private static int readInt(Scanner scanner, String message) {
